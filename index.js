@@ -1,5 +1,6 @@
 const express =require('express');
 const cors = require('cors');
+var jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
 
@@ -21,6 +22,21 @@ function run(){
     try{
         const userCollection = client.db('variety_furnishing').collection('userCollection');
 
+
+        // jwt token validation
+        app.get('/jwt', async(req, res)=>{
+            const email = req.query.email;
+            const query = {email:email};
+            const user = await userCollection.findOne(query);
+            
+            if(user){
+                // we will add expiration time letter
+                const token = jwt.sign({email},process.env.ACCESS_TOKEN);
+                res.send({accessToken:token});
+            }
+           
+            res.status(403).send({accessToken:''});
+        })
        
     }
     finally{
@@ -30,7 +46,7 @@ function run(){
 }
 run();
 
-console.log(uri)
+
 
 
 
