@@ -37,6 +37,15 @@ function run(){
            
             res.status(403).send({accessToken:''});
         })
+
+        // save user information
+        app.post('/user', async(req, res)=>{
+
+            const userInfo = req.body;
+            console.log(userInfo)
+            const result = await userCollection.insertOne(userInfo);
+            res.send(result);
+        })
        
     }
     finally{
