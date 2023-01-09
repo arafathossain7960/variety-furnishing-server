@@ -21,6 +21,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 function run(){
     try{
         const userCollection = client.db('variety_furnishing').collection('userCollection');
+        const productsCollection = client.db('variety_furnishing').collection('productsCollection');
 
 
         // jwt token validation
@@ -37,13 +38,42 @@ function run(){
            
             res.status(403).send({accessToken:''});
         })
+        //get all sellers for add min 
+        app.get('/sellers', async(req, res)=>{
+            const query ={accountType:'seller'};
+            const sellers = await userCollection.find(query).toArray();
+            res.send(sellers);
+
+        })
+        //get all buyers for add min 
+        app.get('/buyers', async(req, res)=>{
+            const query ={accountType:'buyer'};
+            const sellers = await userCollection.find(query).toArray();
+            res.send(sellers);
+
+        })
+        // get products based on category
+        app.get('/products', async(req, res)=>{
+            const category = req.query.category;
+
+            const query = {productCategory:category};
+            const result = await productsCollection.find(query).toArray();
+            res.send(result);
+        })
 
         // save user information
         app.post('/user', async(req, res)=>{
 
             const userInfo = req.body;
-            console.log(userInfo)
             const result = await userCollection.insertOne(userInfo);
+            res.send(result);
+        })
+
+        // save product 
+        app.post('/addproduct', async(req, res)=>{
+
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
             res.send(result);
         })
        
